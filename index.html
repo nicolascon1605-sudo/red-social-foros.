@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForoComunidad - Debate & Amistad</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+  <!-- Encabezado / Navegación -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="bg-indigo-600 text-white font-bold p-2 rounded-lg text-xl">FC</div>
+      <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">ForoComunidad</h1>
+    </div>
+    <button onclick="alert('Próximamente: Iniciar Sesión con Supabase')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+      Iniciar Sesión / Registro
+    </button>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="max-w-6xl mx-auto px-6 py-10 w-full flex-1">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="text-3xl font-extrabold sm:text-4xl mb-3">Conecta a través de debates reales</h2>
+      <p class="text-slate-400 text-base">Para acceder a cualquier grupo y chatear, debes responder primero la encuesta del tema. ¡Rompe el hielo y da tu punto de vista!</p>
+    </div>
+
+    <!-- Lista de Grupos / Comunidades -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Tarjeta 1: Inversiones -->
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
+        <div>
+          <span class="bg-indigo-500/10 text-indigo-400 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-500/20">Finanzas & Economía</span>
+          <h3 class="text-xl font-bold mt-4 mb-2">Inversión a largo plazo: ETF vs Cripto</h3>
+          <p class="text-slate-400 text-sm mb-6">Debate sobre estrategias a 30+ años, interés compuesto y diversificación.</p>
+        </div>
+        <button onclick="abrirEncuesta('Inversión a largo plazo', ['S&P 500 y ETFs tradicionales', 'Bitcoin y Criptomonedas', 'Estrategia 50/50 mixta'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+          <span>Responder Encuesta para Entrar</span> 🔒
+        </button>
+      </div>
+
+      <!-- Tarjeta 2: Deportes -->
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
+        <div>
+          <span class="bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/20">Fútbol & Táctica</span>
+          <h3 class="text-xl font-bold mt-4 mb-2">Estrategia Táctica Fútbol 8</h3>
+          <p class="text-slate-400 text-sm mb-6">Discusión sobre esquemas tácticos, equilibrio defensivo y distribución en cancha.</p>
+        </div>
+        <button onclick="abrirEncuesta('Estrategia Fútbol 8', ['2-3-1-1 con enganche', '3-2-1 orden defensivo', '2-2-2 equilibrio total'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+          <span>Responder Encuesta para Entrar</span> 🔒
+        </button>
+      </div>
+
+      <!-- Tarjeta 3: Tecnología -->
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
+        <div>
+          <span class="bg-purple-500/10 text-purple-400 text-xs font-semibold px-3 py-1 rounded-full border border-purple-500/20">Tecnología & Reparaciones</span>
+          <h3 class="text-xl font-bold mt-4 mb-2">Reparación Electrónica Hogareña</h3>
+          <p class="text-slate-400 text-sm mb-6">Consejos de diagnóstico, repuestos y margen de ganancias en reparación de electrodomésticos.</p>
+        </div>
+        <button onclick="abrirEncuesta('Reparación Electrónica', ['Vale la pena reparar siempre', 'Solo si el costo es menor al 40%', 'Prefiero cambiar por nuevo'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+          <span>Responder Encuesta para Entrar</span> 🔒
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal de Encuesta Obligatoria -->
+  <div id="modal-encuesta" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+      <button onclick="cerrarEncuesta()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase mb-1 block">Encuesta Rompehielos</span>
+      <h3 id="titulo-encuesta" class="text-xl font-bold mb-4">--</h3>
+      <p class="text-slate-300 text-sm mb-4">Elige tu postura para desbloquear el foro y la sala de chat:</p>
+      
+      <div id="opciones-encuesta" class="space-y-3 mb-6">
+        <!-- Se genera dinámicamente con JS -->
+      </div>
+
+      <button onclick="votarYAcceder()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition text-sm">
+        Confirmar mi voto y Entrar al Foro
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let encuestaActual = '';
+
+    function abrirEncuesta(titulo, opciones) {
+      encuestaActual = titulo;
+      document.getElementById('titulo-encuesta').innerText = titulo;
+      const contenedor = document.getElementById('opciones-encuesta');
+      contenedor.innerHTML = '';
+
+      opciones.forEach((opcion, index) => {
+        contenedor.innerHTML += `
+          <label class="flex items-center gap-3 bg-slate-700/50 p-3.5 rounded-xl border border-slate-600/50 hover:border-indigo-500 cursor-pointer transition">
+            <input type="radio" name="voto" value="${index}" ${index === 0 ? 'checked' : ''} class="accent-indigo-500">
+            <span class="text-sm font-medium text-slate-200">${opcion}</span>
+          </label>
+        `;
+      });
+
+      document.getElementById('modal-encuesta').classList.remove('hidden');
+    }
+
+    function cerrarEncuesta() {
+      document.getElementById('modal-encuesta').classList.add('hidden');
+    }
+
+    function votarYAcceder() {
+      alert('¡Voto registrado con éxito! Se ha desbloqueado el foro de debate y el chat del grupo.');
+      cerrarEncuesta();
+    }
+  </script>
+</body>
+</html>

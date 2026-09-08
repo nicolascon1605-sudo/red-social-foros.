@@ -271,11 +271,21 @@
   </div>
 
   <!-- CONEXIÓN SUPABASE Y LÓGICA GENERAL -->
+<!-- CONEXIÓN SUPABASE Y LÓGICA GENERAL -->
   <script>
-    // CONFIGURACIÓN SUPABASE
+    // CONFIGURACIÓN SUPABASE (Reemplaza con tus claves cuando las tengas listas)
     const SUPABASE_URL = 'https://nklgmrsfeiuwtgjzczwz.supabase.co/rest/v1/';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rbGdtcnNmZWl1d3Rnanpjend6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4ODM3MzksImV4cCI6MjEwNDQ1OTczOX0.UcOwcPDDlUQMx8ZjrQ3Fhn1aKNYzuGyP5mVLeQAQvkw';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Inicialización segura de Supabase
+    let supabase = null;
+    if (SUPABASE_URL !== 'https://nklgmrsfeiuwtgjzczwz.supabase.co/rest/v1/' && window.supabase) {
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (err) {
+        console.warn('Error al conectar Supabase, usando almacenamiento local:', err);
+      }
+    }
 
     // ESTADO LOCAL
     let usuarioActual = localStorage.getItem('fc_usuario') || null;

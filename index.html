@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ForoComunidad - Debate & Amistad</title>
+  <title>ForoComunidad - Red Social & Debates</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
-  <!-- Encabezado / Navegación -->
+  <!-- Encabezado Principal -->
   <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
-    <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="irAHome()">
       <div class="bg-indigo-600 text-white font-bold p-2 rounded-lg text-xl">FC</div>
       <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">ForoComunidad</h1>
     </div>
     
-    <div class="flex items-center gap-3" id="nav-buttons">
+    <div class="flex items-center gap-3">
       <button onclick="abrirModalCrearGrupo()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5">
         <span>+ Crear Grupo</span>
       </button>
@@ -26,49 +26,73 @@
     </div>
   </header>
 
-  <!-- Contenido Principal -->
-  <main class="max-w-6xl mx-auto px-6 py-10 w-full flex-1">
+  <!-- VISTA 1: EXPLORADOR DE GRUPOS (Home) -->
+  <main id="vista-home" class="max-w-6xl mx-auto px-6 py-10 w-full flex-1">
     <div class="text-center max-w-2xl mx-auto mb-10">
       <h2 class="text-3xl font-extrabold sm:text-4xl mb-3">Conecta a través de debates reales</h2>
-      <p class="text-slate-400 text-base">Para acceder a cualquier foro y sala de chat, debes responder primero la encuesta del grupo.</p>
+      <p class="text-slate-400 text-base">Crea tu propio grupo o elige uno. Responde la encuesta rompehielos para desbloquear el foro y el chat.</p>
     </div>
 
     <!-- Lista Dinámica de Grupos -->
     <div id="grid-comunidades" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <p class="text-slate-400 text-center col-span-3">Cargando grupos en tiempo real desde Supabase...</p>
+      <!-- Se carga mediante JS -->
+    </div>
+  </main>
+
+  <!-- VISTA 2: DENTRO DEL GRUPO (Chat y Foro Desbloqueado) -->
+  <main id="vista-grupo" class="max-w-5xl mx-auto px-6 py-8 w-full flex-1 hidden">
+    <div class="flex items-center justify-between mb-6">
+      <button onclick="irAHome()" class="text-slate-400 hover:text-white text-sm font-medium flex items-center gap-1">
+        ← Volver a explorar grupos
+      </button>
+      <span class="bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/20" id="vista-categoria-grupo">--</span>
     </div>
 
-    <!-- Vista de Chat / Foro Desbloqueado (Oculto al inicio) -->
-    <div id="seccion-chat" class="hidden bg-slate-800 border border-slate-700 rounded-2xl p-6 mt-8">
-      <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-        <div>
-          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Espacio Desbloqueado</span>
-          <h3 class="text-2xl font-bold" id="chat-titulo-grupo">--</h3>
-        </div>
-        <button onclick="cerrarChat()" class="text-slate-400 hover:text-white text-sm">✕ Volver a Grupos</button>
-      </div>
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 mb-6">
+      <h2 class="text-2xl font-bold mb-2" id="vista-titulo-grupo">--</h2>
+      <p class="text-slate-300 text-sm mb-6" id="vista-desc-grupo">--</p>
 
-      <!-- Métricas / Porcentaje de Votos -->
-      <div class="bg-slate-900/60 rounded-xl p-4 mb-6 border border-slate-700/50">
-        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Resultados de la Encuesta Rompehielos</h4>
-        <div id="lista-porcentajes" class="space-y-3">
-          <!-- Porcentajes calculados con JS -->
+      <!-- Estadísticas de la Encuesta Rompehielos -->
+      <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-700/60 mb-6">
+        <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-3" id="vista-pregunta-encuesta">Resultados de la Encuesta</h4>
+        <div id="vista-porcentajes-encuesta" class="space-y-3">
+          <!-- Barras de porcentaje dinámicas -->
         </div>
       </div>
 
-      <!-- Mensajes en Tiempo Real -->
-      <div class="bg-slate-900 rounded-xl p-4 h-64 overflow-y-auto mb-4 border border-slate-700/50 space-y-3" id="contenedor-mensajes">
-        <p class="text-slate-500 text-xs italic text-center">Bienvenido al chat del grupo. Escribe el primer mensaje para debatir.</p>
+      <!-- Pestañas: Chat / Foro de Discusión -->
+      <div class="border-b border-slate-700 mb-4 flex gap-4">
+        <button onclick="cambiarPestana('chat')" id="tab-chat" class="pb-2 text-sm font-bold border-b-2 border-indigo-500 text-indigo-400">Chat en Vivo</button>
+        <button onclick="cambiarPestana('foro')" id="tab-foro" class="pb-2 text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-slate-200">Foro de Publicaciones</button>
       </div>
 
-      <div class="flex gap-2">
-        <input type="text" id="input-mensaje" placeholder="Escribe tu punto de vista..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
-        <button onclick="enviarMensaje()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">Enviar</button>
+      <!-- Sección Chat -->
+      <div id="sec-chat">
+        <div class="bg-slate-900 rounded-xl p-4 h-72 overflow-y-auto mb-4 border border-slate-700/50 space-y-3" id="contenedor-mensajes">
+          <!-- Mensajes en tiempo real -->
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="input-mensaje" placeholder="Escribe tu mensaje en la comunidad..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500">
+          <button onclick="enviarMensaje()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">Enviar</button>
+        </div>
+      </div>
+
+      <!-- Sección Foro -->
+      <div id="sec-foro" class="hidden space-y-4">
+        <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
+          <span class="text-sm text-slate-300">¿Quieres iniciar un tema de debate largo?</span>
+          <button onclick="alert('Funcionalidad de crear hilo en foro lista para probar en versión final')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-2 rounded-lg border border-slate-600">+ Nuevo Hilo</button>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-700/50">
+          <h5 class="font-semibold text-slate-200 mb-1">Publicación de Bienvenida al Foro</h5>
+          <p class="text-slate-400 text-xs mb-3">Publicado por el creador de la comunidad.</p>
+          <p class="text-slate-300 text-sm">Este espacio queda habilitado permanentemente para todos los que hayan completado la encuesta rompehielos.</p>
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Modal Auth (Con Validación de Email) -->
+  <!-- MODAL: AUTENTICACIÓN -->
   <div id="modal-auth" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
       <button onclick="cerrarModalAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
@@ -76,7 +100,7 @@
       <div class="space-y-4">
         <div>
           <label class="text-xs text-slate-400 block mb-1">Correo Electrónico</label>
-          <input type="email" id="auth-email" required placeholder="ejemplo@correo.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500">
+          <input type="email" id="auth-email" placeholder="usuario@ejemplo.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500">
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Contraseña</label>
@@ -92,38 +116,38 @@
     </div>
   </div>
 
-  <!-- Modal Crear Grupo -->
+  <!-- MODAL: CREAR GRUPO -->
   <div id="modal-crear-grupo" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative">
       <button onclick="cerrarModalCrearGrupo()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-      <span class="text-xs font-bold text-emerald-400 tracking-wider uppercase mb-1 block">Nuevo Foro</span>
+      <span class="text-xs font-bold text-emerald-400 tracking-wider uppercase mb-1 block">Nuevo Grupo</span>
       <h3 class="text-xl font-bold mb-4">Crear Grupo de Discusión</h3>
       
-      <div class="space-y-4 max-h-[75vh] overflow-y-auto pr-2">
+      <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
         <div>
-          <label class="text-xs text-slate-400 block mb-1">Nombre del Grupo / Tema</label>
+          <label class="text-xs text-slate-400 block mb-1">Nombre del Grupo</label>
           <input type="text" id="nuevo-nombre" placeholder="Ej: Estrategia Fútbol 8" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
         </div>
         <div>
           <label class="text-xs text-slate-400 block mb-1">Categoría</label>
           <select id="nueva-categoria" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 text-slate-300">
             <option value="Fútbol & Táctica">Fútbol & Táctica</option>
-            <option value="Finanzas & Economía">Finanzas & Economía</option>
+            <option value="Finanzas & Inversión">Finanzas & Inversión</option>
             <option value="Tecnología">Tecnología</option>
             <option value="General">General</option>
           </select>
         </div>
         <div>
-          <label class="text-xs text-slate-400 block mb-1">Descripción Breve</label>
-          <textarea id="nueva-descripcion" placeholder="¿De qué trata este espacio?" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 h-20"></textarea>
+          <label class="text-xs text-slate-400 block mb-1">Descripción</label>
+          <textarea id="nueva-descripcion" placeholder="¿Cuál es la temática principal del grupo?" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 h-20"></textarea>
         </div>
 
         <div class="border-t border-slate-700 pt-3 mt-3">
-          <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase block mb-2">Encuesta Rompehielos (Obligatoria)</span>
+          <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase block mb-2">Encuesta Rompehielos Obligatoria</span>
           <div class="space-y-3">
             <div>
               <label class="text-xs text-slate-400 block mb-1">Pregunta Inicial</label>
-              <input type="text" id="encuesta-pregunta" placeholder="Ej: ¿Formación preferida para jugar de local?" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500">
+              <input type="text" id="encuesta-pregunta" placeholder="Ej: ¿Cuál es tu esquema táctico favorito?" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500">
             </div>
             <div>
               <label class="text-xs text-slate-400 block mb-1">Opción 1</label>
@@ -133,53 +157,78 @@
               <label class="text-xs text-slate-400 block mb-1">Opción 2</label>
               <input type="text" id="opcion-2" placeholder="Opción B" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
             </div>
-            <div>
-              <label class="text-xs text-slate-400 block mb-1">Opción 3 (Opcional)</label>
-              <input type="text" id="opcion-3" placeholder="Opción C" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
-            </div>
           </div>
         </div>
 
-        <button onclick="guardarGrupoEnSupabase()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition text-sm mt-4">
+        <button onclick="guardarGrupo()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition text-sm mt-4">
           Publicar Grupo y Encuesta
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal Encuesta (Responder para Entrar) -->
+  <!-- MODAL: ENCUESTA OBLIGATORIA DE INGRESO -->
   <div id="modal-encuesta" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
-      <button onclick="cerrarEncuesta()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <button onclick="cerrarModalEncuesta()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
       <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase mb-1 block">Encuesta Rompehielos</span>
-      <h3 id="titulo-encuesta" class="text-xl font-bold mb-4">--</h3>
-      <p class="text-slate-300 text-sm mb-4">Elige tu respuesta para desbloquear el foro y el chat:</p>
+      <h3 id="modal-pregunta-encuesta" class="text-xl font-bold mb-4">--</h3>
+      <p class="text-slate-300 text-sm mb-4">Elige tu postura para ingresar al chat y foro:</p>
       
-      <div id="opciones-encuesta" class="space-y-3 mb-6"></div>
+      <div id="modal-opciones-encuesta" class="space-y-3 mb-6"></div>
 
-      <button onclick="votarYAcceder()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition text-sm">
-        Confirmar mi voto y Entrar al Foro
+      <button onclick="votarYIngresar()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition text-sm">
+        Confirmar Voto e Ingresar
       </button>
     </div>
   </div>
 
   <script>
-    // Memoria local de grupos
-    let gruposLocales = [
-      { id: 1, nombre: 'Estrategia Táctica Fútbol 8', categoria: 'Fútbol & Táctica', desc: 'Debate sobre esquemas, solidez defensiva y funciones de mediocampo.', pregunta: '¿Cuál es la mejor formación táctica?', opciones: ['2-3-1-1 con enganche', '3-2-1 orden defensivo', '2-2-2 equilibrio total'], votos: [5, 3, 2] },
-      { id: 2, nombre: 'Inversión a largo plazo: ETF vs Cripto', categoria: 'Finanzas & Economía', desc: 'Análisis de portafolios a 30+ años, Bitcoin e índices como el S&P 500.', pregunta: '¿Cuál es tu vehículo principal de inversión?', opciones: ['S&P 500 y ETFs', 'Bitcoin y Cripto', 'Estrategia 50/50'], votos: [8, 4, 6] }
-    ];
-
-    let grupoSeleccionado = null;
+    // Configuración Local y Estructura Global
+    let usuarioActual = null;
+    let grupoActivo = null;
     let modoRegistro = false;
 
-    // Abrir/Cerrar Modales
+    // Almacenamiento local persistente en navegador para conservar datos al recargar
+    let comunidades = JSON.parse(localStorage.getItem('fc_comunidades')) || [
+      {
+        id: '1',
+        nombre: 'Estrategia Táctica Fútbol 8',
+        categoria: 'Fútbol & Táctica',
+        desc: 'Debate sobre esquemas tácticos, movimientos defensivos y salidas rápidas.',
+        pregunta: '¿Cuál es la mejor formación táctica?',
+        opciones: ['2-3-1-1 con enganche', '3-2-1 orden defensivo', '2-2-2 equilibrio total'],
+        votos: [6, 4, 2],
+        mensajes: [{ usuario: 'Sistema', texto: '¡Bienvenidos a la discusión táctica!' }]
+      },
+      {
+        id: '2',
+        nombre: 'Inversión a Largo Plazo: ETF vs Cripto',
+        categoria: 'Finanzas & Inversión',
+        desc: 'Estrategia de aportes mensuales, interés compuesto y diversificación.',
+        pregunta: '¿Cuál es tu vehículo de inversión preferido?',
+        opciones: ['S&P 500 y ETFs', 'Bitcoin y Cripto', 'Estrategia 50/50 mixta'],
+        votos: [10, 5, 8],
+        mensajes: [{ usuario: 'Sistema', texto: 'Debate abierto sobre portafolios a 30 años.' }]
+      }
+    ];
+
+    function guardarMemoria() {
+      localStorage.setItem('fc_comunidades', JSON.stringify(comunidades));
+    }
+
+    // Navegación de Vistas
+    function irAHome() {
+      document.getElementById('vista-home').classList.remove('hidden');
+      document.getElementById('vista-grupo').classList.add('hidden');
+      renderizarGrupos();
+    }
+
     function abrirModalAuth() { document.getElementById('modal-auth').classList.remove('hidden'); }
     function cerrarModalAuth() { document.getElementById('modal-auth').classList.add('hidden'); }
     function abrirModalCrearGrupo() { document.getElementById('modal-crear-grupo').classList.remove('hidden'); }
     function cerrarModalCrearGrupo() { document.getElementById('modal-crear-grupo').classList.add('hidden'); }
-    function cerrarEncuesta() { document.getElementById('modal-encuesta').classList.add('hidden'); }
-    function cerrarChat() { document.getElementById('seccion-chat').classList.add('hidden'); }
+    function cerrarModalEncuesta() { document.getElementById('modal-encuesta').classList.add('hidden'); }
 
     function toggleModoAuth() {
       modoRegistro = !modoRegistro;
@@ -187,63 +236,54 @@
       document.getElementById('texto-toggle-auth').innerText = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí';
     }
 
-    // Validación Real de Email
-    function validarEmail(email) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
-    }
-
     function procesarAuth() {
       const email = document.getElementById('auth-email').value;
-      if (!validarEmail(email)) {
-        return alert('Por favor ingresa un correo electrónico válido (ejemplo: usuario@mail.com)');
-      }
-      alert(modoRegistro ? '¡Cuenta registrada con éxito!' : '¡Sesión iniciada correctamente!');
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!regex.test(email)) return alert('Por favor ingresa un correo electrónico válido');
+
+      usuarioActual = email.split('@')[0];
+      document.getElementById('btn-auth').innerText = usuarioActual;
       cerrarModalAuth();
-      document.getElementById('btn-auth').innerText = email.split('@')[0];
+      alert(`¡Sesión iniciada como @${usuarioActual}!`);
     }
 
-    // Crear Grupo y agregar a la lista visible
-    function guardarGrupoEnSupabase() {
+    function guardarGrupo() {
       const nombre = document.getElementById('nuevo-nombre').value;
       const categoria = document.getElementById('nueva-categoria').value;
       const desc = document.getElementById('nueva-descripcion').value;
       const pregunta = document.getElementById('encuesta-pregunta').value;
       const op1 = document.getElementById('opcion-1').value;
       const op2 = document.getElementById('opcion-2').value;
-      const op3 = document.getElementById('opcion-3').value;
 
       if (!nombre || !pregunta || !op1 || !op2) {
-        return alert('Por favor completa el nombre del grupo, la pregunta y al menos 2 opciones de respuesta.');
+        return alert('Por favor completa el nombre, la pregunta y al menos 2 opciones de respuesta.');
       }
 
-      const opciones = [op1, op2];
-      if (op3) opciones.push(op3);
-
-      const nuevoGrupo = {
-        id: Date.now(),
+      const nuevoG = {
+        id: String(Date.now()),
         nombre,
         categoria,
         desc,
         pregunta,
-        opciones,
-        votos: new Array(opciones.length).fill(0)
+        opciones: [op1, op2],
+        votos: [0, 0],
+        mensajes: [{ usuario: 'Sistema', texto: `Grupo "${nombre}" creado con éxito.` }]
       };
 
-      gruposLocales.unshift(nuevoGrupo);
-      alert(`¡Grupo "${nombre}" creado con éxito!`);
+      comunidades.unshift(nuevoG);
+      guardarMemoria();
       cerrarModalCrearGrupo();
       renderizarGrupos();
+      alert('¡Grupo creado y publicado correctamente!');
     }
 
-    // Abrir Modal de Encuesta
-    function abrirEncuesta(idGrupo) {
-      grupoSeleccionado = gruposLocales.find(g => g.id === idGrupo);
-      document.getElementById('titulo-encuesta').innerText = grupoSeleccionado.pregunta;
-      const contenedor = document.getElementById('opciones-encuesta');
+    function abrirEncuestaModal(idGrupo) {
+      grupoActivo = comunidades.find(g => g.id === idGrupo);
+      document.getElementById('modal-pregunta-encuesta').innerText = grupoActivo.pregunta;
+      
+      const contenedor = document.getElementById('modal-opciones-encuesta');
       contenedor.innerHTML = '';
-
-      grupoSeleccionado.opciones.forEach((op, idx) => {
+      grupoActivo.opciones.forEach((op, idx) => {
         contenedor.innerHTML += `
           <label class="flex items-center gap-3 bg-slate-700/50 p-3.5 rounded-xl border border-slate-600/50 hover:border-indigo-500 cursor-pointer transition">
             <input type="radio" name="voto" value="${idx}" ${idx === 0 ? 'checked' : ''} class="accent-indigo-500">
@@ -255,65 +295,94 @@
       document.getElementById('modal-encuesta').classList.remove('hidden');
     }
 
-    // Votar y Desbloquear Chat con Porcentajes
-    function votarYAcceder() {
-      const opcionElegida = document.querySelector('input[name="voto"]:checked').value;
-      grupoSeleccionado.votos[opcionElegida]++;
-
-      cerrarEncuesta();
-      desbloquearChat();
+    function votarYIngresar() {
+      const seleccion = document.querySelector('input[name="voto"]:checked').value;
+      grupoActivo.votos[seleccion]++;
+      guardarMemoria();
+      
+      cerrarModalEncuesta();
+      cargarVistaGrupo();
     }
 
-    function desbloquearChat() {
-      document.getElementById('chat-titulo-grupo').innerText = grupoSeleccionado.nombre;
+    function cargarVistaGrupo() {
+      document.getElementById('vista-home').classList.add('hidden');
+      document.getElementById('vista-grupo').classList.remove('hidden');
 
-      // Calcular Porcentajes
-      const totalVotos = grupoSeleccionado.votos.reduce((a, b) => a + b, 0);
-      const contenedorPorcentajes = document.getElementById('lista-porcentajes');
-      contenedorPorcentajes.innerHTML = '';
+      document.getElementById('vista-titulo-grupo').innerText = grupoActivo.nombre;
+      document.getElementById('vista-desc-grupo').innerText = grupoActivo.desc;
+      document.getElementById('vista-categoria-grupo').innerText = grupoActivo.categoria;
+      document.getElementById('vista-pregunta-encuesta').innerText = `Encuesta: "${grupoActivo.pregunta}"`;
 
-      grupoSeleccionado.opciones.forEach((op, idx) => {
-        const votos = grupoSeleccionado.votos[idx];
-        const porcentaje = totalVotos > 0 ? Math.round((votos / totalVotos) * 100) : 0;
+      // Renderizar Porcentajes
+      const totalVotos = grupoActivo.votos.reduce((a, b) => a + b, 0);
+      const contenedorPct = document.getElementById('vista-porcentajes-encuesta');
+      contenedorPct.innerHTML = '';
 
-        contenedorPorcentajes.innerHTML += `
+      grupoActivo.opciones.forEach((op, idx) => {
+        const v = grupoActivo.votos[idx];
+        const pct = totalVotos > 0 ? Math.round((v / totalVotos) * 100) : 0;
+
+        contenedorPct.innerHTML += `
           <div>
             <div class="flex justify-between text-xs mb-1">
               <span class="text-slate-300 font-medium">${op}</span>
-              <span class="text-indigo-400 font-bold">${porcentaje}% (${votos} votos)</span>
+              <span class="text-indigo-400 font-bold">${pct}% (${v} votos)</span>
             </div>
-            <div class="w-full bg-slate-800 rounded-full h-2">
-              <div class="bg-indigo-600 h-2 rounded-full" style="width: ${porcentaje}%"></div>
+            <div class="w-full bg-slate-800 rounded-full h-2 border border-slate-700/50">
+              <div class="bg-indigo-500 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
             </div>
           </div>
         `;
       });
 
-      document.getElementById('seccion-chat').classList.remove('hidden');
-      document.getElementById('seccion-chat').scrollIntoView({ behavior: 'smooth' });
+      renderizarMensajes();
+    }
+
+    function renderizarMensajes() {
+      const contenedor = document.getElementById('contenedor-mensajes');
+      contenedor.innerHTML = '';
+      grupoActivo.mensajes.forEach(m => {
+        contenedor.innerHTML += `
+          <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-xl max-w-lg">
+            <span class="text-[10px] font-bold text-indigo-400 block mb-0.5">@${m.usuario}</span>
+            <p class="text-sm text-slate-200">${m.texto}</p>
+          </div>
+        `;
+      });
+      contenedor.scrollTop = contenedor.scrollHeight;
     }
 
     function enviarMensaje() {
       const input = document.getElementById('input-mensaje');
       if (!input.value.trim()) return;
 
-      const contenedor = document.getElementById('contenedor-mensajes');
-      contenedor.innerHTML += `
-        <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-xl max-w-md">
-          <span class="text-[10px] font-bold text-indigo-400 block mb-0.5">Tú</span>
-          <p class="text-sm text-slate-200">${input.value}</p>
-        </div>
-      `;
+      const autor = usuarioActual || 'Anonimo';
+      grupoActivo.mensajes.push({ usuario: autor, texto: input.value });
+      guardarMemoria();
+      
       input.value = '';
-      contenedor.scrollTop = contenedor.scrollHeight;
+      renderizarMensajes();
     }
 
-    // Renderizar tarjetas de grupos
+    function cambiarPestana(p) {
+      if (p === 'chat') {
+        document.getElementById('sec-chat').classList.remove('hidden');
+        document.getElementById('sec-foro').classList.add('hidden');
+        document.getElementById('tab-chat').className = 'pb-2 text-sm font-bold border-b-2 border-indigo-500 text-indigo-400';
+        document.getElementById('tab-foro').className = 'pb-2 text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-slate-200';
+      } else {
+        document.getElementById('sec-chat').classList.add('hidden');
+        document.getElementById('sec-foro').classList.remove('hidden');
+        document.getElementById('tab-foro').className = 'pb-2 text-sm font-bold border-b-2 border-indigo-500 text-indigo-400';
+        document.getElementById('tab-chat').className = 'pb-2 text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-slate-200';
+      }
+    }
+
     function renderizarGrupos() {
       const grid = document.getElementById('grid-comunidades');
       grid.innerHTML = '';
 
-      gruposLocales.forEach(g => {
+      comunidades.forEach(g => {
         grid.innerHTML += `
           <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
             <div>
@@ -321,7 +390,7 @@
               <h3 class="text-xl font-bold mt-4 mb-2">${g.nombre}</h3>
               <p class="text-slate-400 text-sm mb-6">${g.desc}</p>
             </div>
-            <button onclick="abrirEncuesta(${g.id})" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+            <button onclick="abrirEncuestaModal('${g.id}')" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
               <span>Responder Encuesta para Entrar</span> 🔒
             </button>
           </div>
@@ -329,6 +398,7 @@
       });
     }
 
+    // Inicialización al Cargar
     renderizarGrupos();
   </script>
 </body>

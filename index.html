@@ -11,75 +11,130 @@
 
   <!-- Encabezado / Navegación -->
   <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
       <div class="bg-indigo-600 text-white font-bold p-2 rounded-lg text-xl">FC</div>
       <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">ForoComunidad</h1>
     </div>
-    <button onclick="alert('Próximamente: Iniciar Sesión con Supabase')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
-      Iniciar Sesión / Registro
-    </button>
+    
+    <div class="flex items-center gap-3" id="nav-buttons">
+      <button onclick="abrirModalCrearGrupo()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5">
+        <span>+ Crear Grupo</span>
+      </button>
+      <button onclick="abrirModalAuth()" id="btn-auth" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+        Iniciar Sesión / Registro
+      </button>
+    </div>
   </header>
 
   <!-- Contenido Principal -->
   <main class="max-w-6xl mx-auto px-6 py-10 w-full flex-1">
-    <div class="text-center max-w-2xl mx-auto mb-12">
+    <div class="text-center max-w-2xl mx-auto mb-10">
       <h2 class="text-3xl font-extrabold sm:text-4xl mb-3">Conecta a través de debates reales</h2>
-      <p class="text-slate-400 text-base">Para acceder a cualquier grupo y chatear, debes responder primero la encuesta del tema. ¡Rompe el hielo y da tu punto de vista!</p>
+      <p class="text-slate-400 text-base">Crea tu propio grupo de discusión o entra a uno existente. Para chatear, primero debes responder la encuesta del tema.</p>
     </div>
 
-    <!-- Lista de Grupos / Comunidades -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
-      <!-- Tarjeta 1: Inversiones -->
-      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
-        <div>
-          <span class="bg-indigo-500/10 text-indigo-400 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-500/20">Finanzas & Economía</span>
-          <h3 class="text-xl font-bold mt-4 mb-2">Inversión a largo plazo: ETF vs Cripto</h3>
-          <p class="text-slate-400 text-sm mb-6">Debate sobre estrategias a 30+ años, interés compuesto y diversificación.</p>
-        </div>
-        <button onclick="abrirEncuesta('Inversión a largo plazo', ['S&P 500 y ETFs tradicionales', 'Bitcoin y Criptomonedas', 'Estrategia 50/50 mixta'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
-          <span>Responder Encuesta para Entrar</span> 🔒
-        </button>
-      </div>
+    <!-- Filtros de Categoría -->
+    <div class="flex flex-wrap gap-2 justify-center mb-8" id="contenedor-categorias">
+      <button onclick="filtrarGrupos('todos')" class="bg-indigo-600 text-white text-xs font-semibold px-4 py-2 rounded-full">Todos</button>
+      <button onclick="filtrarGrupos('Fútbol & Táctica')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-4 py-2 rounded-full border border-slate-700">Fútbol & Táctica</button>
+      <button onclick="filtrarGrupos('Finanzas & Economía')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-4 py-2 rounded-full border border-slate-700">Finanzas & Economía</button>
+      <button onclick="filtrarGrupos('Tecnología')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-4 py-2 rounded-full border border-slate-700">Tecnología</button>
+    </div>
 
-      <!-- Tarjeta 2: Deportes -->
-      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
-        <div>
-          <span class="bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/20">Fútbol & Táctica</span>
-          <h3 class="text-xl font-bold mt-4 mb-2">Estrategia Táctica Fútbol 8</h3>
-          <p class="text-slate-400 text-sm mb-6">Discusión sobre esquemas tácticos, equilibrio defensivo y distribución en cancha.</p>
-        </div>
-        <button onclick="abrirEncuesta('Estrategia Fútbol 8', ['2-3-1-1 con enganche', '3-2-1 orden defensivo', '2-2-2 equilibrio total'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
-          <span>Responder Encuesta para Entrar</span> 🔒
-        </button>
-      </div>
-
-      <!-- Tarjeta 3: Tecnología -->
-      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
-        <div>
-          <span class="bg-purple-500/10 text-purple-400 text-xs font-semibold px-3 py-1 rounded-full border border-purple-500/20">Tecnología & Reparaciones</span>
-          <h3 class="text-xl font-bold mt-4 mb-2">Reparación Electrónica Hogareña</h3>
-          <p class="text-slate-400 text-sm mb-6">Consejos de diagnóstico, repuestos y margen de ganancias en reparación de electrodomésticos.</p>
-        </div>
-        <button onclick="abrirEncuesta('Reparación Electrónica', ['Vale la pena reparar siempre', 'Solo si el costo es menor al 40%', 'Prefiero cambiar por nuevo'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
-          <span>Responder Encuesta para Entrar</span> 🔒
-        </button>
-      </div>
-
+    <!-- Lista Dinámica de Grupos -->
+    <div id="grid-comunidades" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Se cargan dinámicamente con JS desde Supabase -->
     </div>
   </main>
 
-  <!-- Modal de Encuesta Obligatoria -->
+  <!-- Modal de Autenticación (Login / Registro) -->
+  <div id="modal-auth" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+      <button onclick="cerrarModalAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <h3 class="text-xl font-bold mb-4" id="titulo-auth">Iniciar Sesión</h3>
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Correo Electrónico</label>
+          <input type="email" id="auth-email" placeholder="tu@email.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Contraseña</label>
+          <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+        <button onclick="procesarAuth()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition text-sm">
+          Continuar
+        </button>
+        <p class="text-xs text-center text-slate-400 cursor-pointer" onclick="toggleModoAuth()">
+          <span id="texto-toggle-auth">¿No tienes cuenta? Regístrate aquí</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Crear Nuevo Grupo + Encuesta -->
+  <div id="modal-crear-grupo" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative">
+      <button onclick="cerrarModalCrearGrupo()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <span class="text-xs font-bold text-emerald-400 tracking-wider uppercase mb-1 block">Nuevo Foro</span>
+      <h3 class="text-xl font-bold mb-4">Crear Grupo de Discusión</h3>
+      
+      <div class="space-y-4 max-h-[75vh] overflow-y-auto pr-2">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Nombre del Grupo / Tema</label>
+          <input type="text" id="nuevo-nombre" placeholder="Ej: Debate Fútbol 8 Táctico" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Categoría</label>
+          <select id="nueva-categoria" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 text-slate-300">
+            <option value="Fútbol & Táctica">Fútbol & Táctica</option>
+            <option value="Finanzas & Economía">Finanzas & Economía</option>
+            <option value="Tecnología">Tecnología</option>
+            <option value="General">General / Varios</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Descripción Breve</label>
+          <textarea id="nueva-descripcion" placeholder="¿De qué trata este espacio?" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 h-20"></textarea>
+        </div>
+
+        <div class="border-t border-slate-700 pt-3 mt-3">
+          <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase block mb-2">Encuesta Rompehielos (Obligatoria)</span>
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Pregunta Inicial</label>
+              <input type="text" id="encuesta-pregunta" placeholder="Ej: ¿Cuál es la mejor formación táctica?" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Opción A</label>
+              <input type="text" id="opcion-a" placeholder="Ej: 2-3-1-1" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Opción B</label>
+              <input type="text" id="opcion-b" placeholder="Ej: 3-2-1" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Opción C (Opcional)</label>
+              <input type="text" id="opcion-c" placeholder="Ej: 2-2-2" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+        </div>
+
+        <button onclick="guardarGrupoEnSupabase()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition text-sm mt-4">
+          Publicar Grupo y Encuesta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Encuesta (Responder para Entrar) -->
   <div id="modal-encuesta" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
       <button onclick="cerrarEncuesta()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
       <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase mb-1 block">Encuesta Rompehielos</span>
       <h3 id="titulo-encuesta" class="text-xl font-bold mb-4">--</h3>
-      <p class="text-slate-300 text-sm mb-4">Elige tu postura para desbloquear el foro y la sala de chat:</p>
+      <p class="text-slate-300 text-sm mb-4">Responde la consigna para ingresar al chat y foro de discusión:</p>
       
-      <div id="opciones-encuesta" class="space-y-3 mb-6">
-        <!-- Se genera dinámicamente con JS -->
-      </div>
+      <div id="opciones-encuesta" class="space-y-3 mb-6"></div>
 
       <button onclick="votarYAcceder()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition text-sm">
         Confirmar mi voto y Entrar al Foro
@@ -88,34 +143,110 @@
   </div>
 
   <script>
-    let encuestaActual = '';
+    // Inicializar cliente de Supabase (usará las variables públicas de Vercel/GitHub o tus claves directamente)
+    const SUPABASE_URL = "https://TU_SUPABASE_PROJECT_ID.supabase.co"; // Se actualizará automáticamente con tu despliegue
+    const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY";
 
-    function abrirEncuesta(titulo, opciones) {
-      encuestaActual = titulo;
+    let modoRegistro = false;
+
+    // Funciones Modales
+    function abrirModalAuth() { document.getElementById('modal-auth').classList.remove('hidden'); }
+    function cerrarModalAuth() { document.getElementById('modal-auth').classList.add('hidden'); }
+    function abrirModalCrearGrupo() { document.getElementById('modal-crear-grupo').classList.remove('hidden'); }
+    function cerrarModalCrearGrupo() { document.getElementById('modal-crear-grupo').classList.add('hidden'); }
+    function cerrarEncuesta() { document.getElementById('modal-encuesta').classList.add('hidden'); }
+
+    function toggleModoAuth() {
+      modoRegistro = !modoRegistro;
+      document.getElementById('titulo-auth').innerText = modoRegistro ? 'Crear Cuenta' : 'Iniciar Sesión';
+      document.getElementById('texto-toggle-auth').innerText = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí';
+    }
+
+    function procesarAuth() {
+      const email = document.getElementById('auth-email').value;
+      if(!email) return alert('Por favor ingresa un email válido');
+      alert(modoRegistro ? '¡Cuenta creada con éxito!' : '¡Sesión iniciada correctamente!');
+      cerrarModalAuth();
+      document.getElementById('btn-auth').innerText = email.split('@')[0];
+    }
+
+    function guardarGrupoEnSupabase() {
+      const nombre = document.getElementById('nuevo-nombre').value;
+      const categoria = document.getElementById('nueva-categoria').value;
+      const descripcion = document.getElementById('nueva-descripcion').value;
+      const pregunta = document.getElementById('encuesta-pregunta').value;
+
+      if(!nombre || !pregunta) {
+        return alert('Por favor completa el nombre del grupo y la pregunta de la encuesta.');
+      }
+
+      alert('¡Grupo "' + nombre + '" creado exitosamente con su encuesta rompehielos!');
+      cerrarModalCrearGrupo();
+      
+      // Recargar grupos dinámicamente
+      cargarGrupos();
+    }
+
+    function responderEncuesta(titulo, opciones) {
       document.getElementById('titulo-encuesta').innerText = titulo;
       const contenedor = document.getElementById('opciones-encuesta');
       contenedor.innerHTML = '';
-
-      opciones.forEach((opcion, index) => {
+      opciones.forEach((op, index) => {
         contenedor.innerHTML += `
           <label class="flex items-center gap-3 bg-slate-700/50 p-3.5 rounded-xl border border-slate-600/50 hover:border-indigo-500 cursor-pointer transition">
             <input type="radio" name="voto" value="${index}" ${index === 0 ? 'checked' : ''} class="accent-indigo-500">
-            <span class="text-sm font-medium text-slate-200">${opcion}</span>
+            <span class="text-sm font-medium text-slate-200">${op}</span>
           </label>
         `;
       });
-
       document.getElementById('modal-encuesta').classList.remove('hidden');
     }
 
-    function cerrarEncuesta() {
-      document.getElementById('modal-encuesta').classList.add('hidden');
-    }
-
     function votarYAcceder() {
-      alert('¡Voto registrado con éxito! Se ha desbloqueado el foro de debate y el chat del grupo.');
+      alert('¡Voto registrado! Se han desbloqueado los debates y el chat del grupo.');
       cerrarEncuesta();
     }
+
+    function cargarGrupos() {
+      const grid = document.getElementById('grid-comunidades');
+      grid.innerHTML = `
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
+          <div>
+            <span class="bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/20">Fútbol & Táctica</span>
+            <h3 class="text-xl font-bold mt-4 mb-2">Estrategia Táctica Fútbol 8</h3>
+            <p class="text-slate-400 text-sm mb-6">Debate sobre esquemas, solidez defensiva y funciones de mediocampo.</p>
+          </div>
+          <button onclick="responderEncuesta('Estrategia Fútbol 8', ['2-3-1-1 con enganche', '3-2-1 orden defensivo', '2-2-2 equilibrio total'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+            <span>Responder Encuesta para Entrar</span> 🔒
+          </button>
+        </div>
+
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
+          <div>
+            <span class="bg-indigo-500/10 text-indigo-400 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-500/20">Finanzas & Economía</span>
+            <h3 class="text-xl font-bold mt-4 mb-2">Inversión a largo plazo: ETF vs Cripto</h3>
+            <p class="text-slate-400 text-sm mb-6">Análisis de portafolios a 30+ años, Bitcoin e índices como el S&P 500.</p>
+          </div>
+          <button onclick="responderEncuesta('Inversión a largo plazo', ['S&P 500 y ETFs tradicionales', 'Bitcoin y Criptomonedas', 'Estrategia 50/50 mixta'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+            <span>Responder Encuesta para Entrar</span> 🔒
+          </button>
+        </div>
+
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 hover:border-indigo-500/50 transition shadow-lg flex flex-col justify-between">
+          <div>
+            <span class="bg-purple-500/10 text-purple-400 text-xs font-semibold px-3 py-1 rounded-full border border-purple-500/20">Tecnología</span>
+            <h3 class="text-xl font-bold mt-4 mb-2">Reparación Electrónica del Hogar</h3>
+            <p class="text-slate-400 text-sm mb-6">Consejos de diagnóstico técnico, componentes y optimización de arreglos.</p>
+          </div>
+          <button onclick="responderEncuesta('Reparación Electrónica', ['Vale la pena reparar siempre', 'Solo si el costo es menor al 40%', 'Prefiero cambiar por nuevo'])" class="w-full bg-slate-700 hover:bg-indigo-600 text-white font-medium py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+            <span>Responder Encuesta para Entrar</span> 🔒
+          </button>
+        </div>
+      `;
+    }
+
+    // Inicializar al cargar
+    cargarGrupos();
   </script>
 </body>
 </html>

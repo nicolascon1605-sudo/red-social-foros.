@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ForoComunidad - Plataforma Social de Debates</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
@@ -61,7 +60,7 @@
         Encuentra tu tema, vota tu postura y únete al debate.
       </h2>
       <p class="text-slate-400 text-sm sm:text-base max-w-xl">
-        Es obligatorio identificarte y responder la encuesta del grupo antes de interactuar en el chat o en el foro.
+        Responde la encuesta de entrada para acceder al chat exclusivo y debate con personas que comparten tu interés.
       </p>
 
       <!-- Buscador -->
@@ -69,7 +68,7 @@
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
-        <input type="text" id="input-busqueda" oninput="filtrarGrupos()" placeholder="Buscar por nombre o palabra clave (Robótica, Fútbol, Finanzas...)" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner">
+        <input type="text" id="input-busqueda" oninput="filtrarGrupos()" placeholder="Buscar por nombre o palabra clave (Robótica, Fútbol, Inversión...)" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner">
       </div>
     </div>
 
@@ -90,7 +89,7 @@
     <div id="grid-comunidades" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </main>
 
-  <!-- VISTA 2: DENTRO DEL GRUPO (Chat y Foro Interactivo) -->
+  <!-- VISTA 2: DENTRO DEL GRUPO (Chat y Estadísticas) -->
   <main id="vista-grupo" class="max-w-6xl mx-auto px-4 sm:px-8 py-6 w-full flex-1 hidden flex-col gap-6">
     <div class="flex items-center justify-between">
       <button onclick="irAHome()" class="text-slate-400 hover:text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition bg-slate-900/80 px-3.5 py-2 rounded-xl border border-slate-800">
@@ -118,37 +117,23 @@
         </div>
       </div>
 
-      <!-- Chat en Vivo / Foro Interactivo -->
+      <!-- Chat en Vivo -->
       <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between h-[600px]">
-        
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div class="flex gap-4">
-            <button onclick="cambiarPestana('chat')" id="tab-chat" class="text-sm font-bold border-b-2 border-indigo-500 text-indigo-400 pb-1.5 transition">Chat en Vivo</button>
-            <button onclick="cambiarPestana('foro')" id="tab-foro" class="text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-slate-200 pb-1.5 transition">Foro de Hilos</button>
-          </div>
+          <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+            <span>Chat del Grupo</span>
+          </h3>
           <span class="text-[10px] text-emerald-400 font-medium flex items-center gap-1.5 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Realtime
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Activo
           </span>
         </div>
 
-        <!-- Chat -->
-        <div id="sec-chat" class="flex-1 flex flex-col justify-between pt-4 overflow-hidden">
-          <div id="contenedor-mensajes" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar"></div>
-          <div class="pt-4 flex gap-2">
-            <input type="text" id="input-mensaje" onkeypress="detectarEnter(event)" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
-            <button onclick="enviarMensaje()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white px-5 py-3 rounded-xl text-sm font-bold transition shadow-lg shadow-indigo-900/30">Enviar</button>
-          </div>
-        </div>
+        <div id="contenedor-mensajes" class="flex-1 overflow-y-auto space-y-3 my-4 pr-2 custom-scrollbar"></div>
 
-        <!-- Foro de Hilos Interactivos -->
-        <div id="sec-foro" class="hidden flex-1 flex-col pt-4 overflow-y-auto custom-scrollbar space-y-4">
-          <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
-            <span class="text-xs text-slate-300">¿Quieres iniciar un tema de debate largo?</span>
-            <button onclick="abrirModalCrearHilo()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-bold px-3.5 py-2 rounded-lg border border-indigo-500/30 transition">+ Nuevo Hilo</button>
-          </div>
-          <div id="lista-hilos-foro" class="space-y-4"></div>
+        <div class="pt-3 border-t border-slate-800 flex gap-2">
+          <input type="text" id="input-mensaje" onkeypress="detectarEnter(event)" placeholder="Escribe tu mensaje..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+          <button onclick="enviarMensaje()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white px-5 py-3 rounded-xl text-sm font-bold transition shadow-lg shadow-indigo-900/30">Enviar</button>
         </div>
-
       </div>
     </div>
   </main>
@@ -159,20 +144,16 @@
   <div id="modal-auth" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl relative space-y-4">
       <button onclick="cerrarModalAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-      <h3 class="text-xl font-black text-white">Identifícate para Continuar</h3>
-      <p class="text-xs text-slate-400">Para garantizar la autenticidad, no se permiten mensajes anónimos en la comunidad.</p>
+      <h3 class="text-xl font-black text-white">Configurar tu Perfil</h3>
+      <p class="text-xs text-slate-400">Ingresa tu apodo para identificarte en las conversaciones del grupo.</p>
       
       <div class="space-y-3">
         <div>
-          <label class="text-xs text-slate-400 block mb-1 font-semibold">Correo Electrónico</label>
-          <input type="email" id="auth-email" placeholder="usuario@ejemplo.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="text-xs text-slate-400 block mb-1 font-semibold">Nombre de Usuario (Apodo)</label>
+          <label class="text-xs text-slate-400 block mb-1 font-semibold">Tu Apodo / Username</label>
           <input type="text" id="auth-username" placeholder="Ej: Mateo_08" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-indigo-500">
         </div>
         <button onclick="procesarAuth()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-indigo-900/30 text-sm">
-          Guardar Nombre
+          Guardar
         </button>
       </div>
     </div>
@@ -249,52 +230,14 @@
     </div>
   </div>
 
-  <!-- MODAL NUEVO HILO FORO -->
-  <div id="modal-crear-hilo" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl relative space-y-4">
-      <button onclick="cerrarModalCrearHilo()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-      <h3 class="text-lg font-bold text-white">Nuevo Hilo de Debate</h3>
-      <div class="space-y-3">
-        <div>
-          <label class="text-xs text-slate-400 block mb-1">Título del Hilo</label>
-          <input type="text" id="hilo-titulo" placeholder="Ej: ¿Qué lenguaje recomiendan para visión por computadora?" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="text-xs text-slate-400 block mb-1">Argumento Inicial</label>
-          <textarea id="hilo-contenido" placeholder="Escribe tu punto de vista detallado..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-indigo-500 h-24"></textarea>
-        </div>
-        <button onclick="guardarHiloForo()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition text-sm">
-          Publicar Hilo
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONEXIÓN SUPABASE Y LÓGICA GENERAL -->
-<!-- CONEXIÓN SUPABASE Y LÓGICA GENERAL -->
+  <!-- LÓGICA GENERAL -->
   <script>
-    // CONFIGURACIÓN SUPABASE (Reemplaza con tus claves cuando las tengas listas)
-    const SUPABASE_URL = 'https://nklgmrsfeiuwtgjzczwz.supabase.co/rest/v1/';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rbGdtcnNmZWl1d3Rnanpjend6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4ODM3MzksImV4cCI6MjEwNDQ1OTczOX0.UcOwcPDDlUQMx8ZjrQ3Fhn1aKNYzuGyP5mVLeQAQvkw';
-
-    // Inicialización segura de Supabase
-    let supabase = null;
-    if (SUPABASE_URL !== 'https://nklgmrsfeiuwtgjzczwz.supabase.co/rest/v1/' && window.supabase) {
-      try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      } catch (err) {
-        console.warn('Error al conectar Supabase, usando almacenamiento local:', err);
-      }
-    }
-
     // ESTADO LOCAL
     let usuarioActual = localStorage.getItem('fc_usuario') || null;
     let gruposUnidos = JSON.parse(localStorage.getItem('fc_grupos_unidos')) || [];
     let grupoActivo = null;
     let categoriaFiltro = 'Todas';
-    let hilosForo = [];
 
-    // DATOS DE RESERVA SI NO HAY BBDD TODAVÍA
     let comunidades = JSON.parse(localStorage.getItem('fc_comunidades_v3')) || [
       {
         id: '101',
@@ -304,7 +247,7 @@
         pregunta: '¿Cuál es la mejor plataforma para prototipar robots rápidamente?',
         opciones: ['Arduino / ESP32', 'Raspberry Pi', 'STM32 / Microcontroladores', 'Placas Propietarias'],
         votos: [12, 8, 4, 2],
-        mensajes: [{ usuario: 'AdminRobotics', texto: '¡Bienvenidos desarrolladores y aficionados a la robótica!' }]
+        mensajes: [{ usuario: 'AdminRobotics', texto: '¡Bienvenidos aficionados y desarrolladores a la comunidad!' }]
       },
       {
         id: '102',
@@ -324,7 +267,7 @@
       if (usuarioActual) localStorage.setItem('fc_usuario', usuarioActual);
     }
 
-    // NAVEGACIÓN DE PANTALLAS
+    // NAVEGACIÓN
     function irAHome() {
       document.getElementById('vista-home').classList.remove('hidden');
       document.getElementById('vista-grupo').classList.add('hidden');
@@ -338,15 +281,11 @@
     function abrirModalCrearGrupo() { document.getElementById('modal-crear-grupo').classList.remove('hidden'); }
     function cerrarModalCrearGrupo() { document.getElementById('modal-crear-grupo').classList.add('hidden'); }
     function cerrarModalEncuesta() { document.getElementById('modal-encuesta').classList.add('hidden'); }
-    function abrirModalCrearHilo() { document.getElementById('modal-crear-hilo').classList.remove('hidden'); }
-    function cerrarModalCrearHilo() { document.getElementById('modal-crear-hilo').classList.add('hidden'); }
 
-    // IDENTIFICACIÓN OBLIGATORIA (SIN ANÓNIMOS)
+    // AUTH USUARIO
     function procesarAuth() {
-      const email = document.getElementById('auth-email').value.trim();
       const uname = document.getElementById('auth-username').value.trim();
-
-      if (!email || !uname) return alert('Debes completar tanto el correo como el apodo para participar.');
+      if (!uname) return alert('Ingresa un apodo para continuar.');
 
       usuarioActual = uname;
       guardarMemoria();
@@ -381,7 +320,7 @@
       renderizarHeaderUsuario();
     }
 
-    // ACCESO RÁPIDO
+    // BARRA ACCESO RÁPIDO
     function renderizarBarraMisGrupos() {
       const barra = document.getElementById('barra-mis-grupos');
       const contenedorChips = document.getElementById('lista-mis-grupos-chips');
@@ -407,7 +346,7 @@
       });
     }
 
-    // CREACIÓN DE GRUPOS
+    // CREAR GRUPO
     function agregarOpcionCreador() {
       const contenedor = document.getElementById('contenedor-opciones-creador');
       const inputs = contenedor.querySelectorAll('.opcion-input');
@@ -454,14 +393,8 @@
       renderizarGrupos();
     }
 
-    // FLUJO DE INGRESO Y ENCUESTAS
+    // ENCUESTAS E INGRESO
     function interactuarGrupo(idGrupo) {
-      if (!usuarioActual) {
-        alert('Debes identificarme con tu apodo antes de entrar a un grupo.');
-        abrirModalAuth();
-        return;
-      }
-
       grupoActivo = comunidades.find(g => g.id === idGrupo);
 
       if (gruposUnidos.includes(grupoActivo.id)) {
@@ -539,7 +472,6 @@
       });
 
       renderizarMensajes();
-      renderizarHilosForo();
     }
 
     // MENSAJES Y CHAT
@@ -552,10 +484,7 @@
         contenedor.innerHTML += `
           <div class="flex flex-col ${esMio ? 'items-end' : 'items-start'}">
             <div class="${esMio ? 'bg-indigo-600 text-white' : 'bg-slate-950 border border-slate-800 text-slate-200'} p-3 rounded-2xl max-w-md shadow">
-              <div class="flex items-center justify-between gap-3 mb-0.5">
-                <span class="text-[10px] font-bold ${esMio ? 'text-indigo-200' : 'text-indigo-400'}">@${m.usuario}</span>
-                ${!esMio && m.usuario !== 'Sistema' ? `<button onclick="iniciarPrivado('${m.usuario}')" class="text-[9px] text-slate-400 hover:text-white underline">Privado ✉️</button>` : ''}
-              </div>
+              <span class="text-[10px] font-bold ${esMio ? 'text-indigo-200' : 'text-indigo-400'} block mb-0.5">@${m.usuario}</span>
               <p class="text-xs sm:text-sm leading-relaxed">${m.texto}</p>
             </div>
           </div>
@@ -567,7 +496,7 @@
 
     function enviarMensaje() {
       if (!usuarioActual) {
-        alert('Debes iniciar sesión para comentar.');
+        alert('Debes iniciar sesión con tu apodo antes de enviar mensajes.');
         abrirModalAuth();
         return;
       }
@@ -587,99 +516,7 @@
       if (e.key === 'Enter') enviarMensaje();
     }
 
-    function iniciarPrivado(destinatario) {
-      alert(`Iniciando solicitud de chat privado seguro de 1 a 1 con @${destinatario}.`);
-    }
-
-    // FORO E HILOS INTERACTIVOS
-    function guardarHiloForo() {
-      const titulo = document.getElementById('hilo-titulo').value.trim();
-      const contenido = document.getElementById('hilo-contenido').value.trim();
-
-      if (!titulo || !contenido) return alert('Completa título y argumento.');
-
-      const nuevoHilo = {
-        id: String(Date.now()),
-        autor: usuarioActual || 'Usuario',
-        titulo,
-        contenido,
-        respuestas: []
-      };
-
-      hilosForo.unshift(nuevoHilo);
-      cerrarModalCrearHilo();
-      renderizarHilosForo();
-    }
-
-    function renderizarHilosForo() {
-      const lista = document.getElementById('lista-hilos-foro');
-      lista.innerHTML = '';
-
-      if (hilosForo.length === 0) {
-        lista.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">No hay hilos abiertos. ¡Crea el primero!</p>`;
-        return;
-      }
-
-      hilosForo.forEach(h => {
-        lista.innerHTML += `
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-            <div class="flex justify-between items-center">
-              <span class="text-[10px] font-bold text-indigo-400">Publicado por @${h.autor}</span>
-            </div>
-            <h4 class="font-bold text-sm text-white">${h.titulo}</h4>
-            <p class="text-slate-300 text-xs">${h.contenido}</p>
-            
-            <!-- Respuestas del Hilo -->
-            <div class="pt-2 border-t border-slate-800/60 space-y-2">
-              <div class="flex gap-2">
-                <input type="text" id="input-resp-${h.id}" placeholder="Responder a este hilo..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200">
-                <button onclick="responderHilo('${h.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold">Comentar</button>
-              </div>
-              <div id="respuestas-hilo-${h.id}" class="space-y-1 pl-2 border-l-2 border-indigo-500/30">
-                ${h.respuestas.map(r => `<p class="text-[11px] text-slate-400"><strong class="text-indigo-300">@${r.autor}:</strong> ${r.texto}</p>`).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function responderHilo(idHilo) {
-      if (!usuarioActual) {
-        alert('Identifícate con tu apodo antes de responder.');
-        return abrirModalAuth();
-      }
-
-      const input = document.getElementById(`input-resp-${idHilo}`);
-      const texto = input.value.trim();
-      if (!texto) return;
-
-      const hilo = hilosForo.find(item => item.id === idHilo);
-      hilo.respuestas.push({ autor: usuarioActual, texto });
-      
-      input.value = '';
-      renderizarHilosForo();
-    }
-
-    function cambiarPestana(p) {
-      if (p === 'chat') {
-        document.getElementById('sec-chat').classList.remove('hidden');
-        document.getElementById('sec-chat').classList.add('flex');
-        document.getElementById('sec-foro').classList.add('hidden');
-        document.getElementById('sec-foro').classList.remove('flex');
-        document.getElementById('tab-chat').className = 'text-sm font-bold border-b-2 border-indigo-500 text-indigo-400 pb-1.5 transition';
-        document.getElementById('tab-foro').className = 'text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-slate-200 pb-1.5 transition';
-      } else {
-        document.getElementById('sec-chat').classList.add('hidden');
-        document.getElementById('sec-chat').classList.remove('flex');
-        document.getElementById('sec-foro').classList.remove('hidden');
-        document.getElementById('sec-foro').classList.add('flex');
-        document.getElementById('tab-foro').className = 'text-sm font-bold border-b-2 border-indigo-500 text-indigo-400 pb-1.5 transition';
-        document.getElementById('tab-chat').className = 'text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-slate-200 pb-1.5 transition';
-      }
-    }
-
-    // FILTRADO DE GRUPOS
+    // FILTRADO Y EXPLORADOR
     function filtrarCategoria(cat) {
       categoriaFiltro = cat;
       document.querySelectorAll('.btn-categoria').forEach(btn => {
